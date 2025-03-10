@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>We Are Hiring - Galactic Crew</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
+  <style>
+    /* Basic reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-glow: #0ff;
+      --secondary-glow: #80f;
+      --text-color: #e1f2ff;
+      --panel-bg: rgba(16, 24, 48, 0.5);
+    }
+    
+    body {
+      overflow-x: hidden;
+      background: #000 url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2070&auto=format&fit=crop')
+        no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-color);
+      height: 200vh; /* for parallax scrolling */
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    /* Starfield background */
+    #stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    /* Parallax layers */
+    .parallax {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      z-index: 1;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    
+    .parallax-near {
+      background: transparent url('https://www.transparentpng.com/thumb/asteroid/asteroid-transparent-background-21.png') repeat;
+      animation: drift 40s linear infinite;
+    }
+    
+    .parallax-mid {
+      background: transparent url('https://www.transparentpng.com/thumb/asteroid/small-asteroid-transparent-png-4.png') repeat;
+      animation: drift-reverse 60s linear infinite;
+    }
+    
+    .parallax-far {
+      background: transparent url('https://www.transparentpng.com/thumb/moon/best-moon-transparent-17.png') no-repeat;
+      background-size: 20%;
+      background-position: 80% 15%;
+      animation: subtle-float 120s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      0% { background-position: 0 0; }
+      100% { background-position: 1000px 400px; }
+    }
+    
+    @keyframes drift-reverse {
+      0% { background-position: 1000px 300px; }
+      100% { background-position: 0 0; }
+    }
+    
+    @keyframes subtle-float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-50px, 30px); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes glitch {
+      0% { text-shadow: 0.05em 0 0 var(--primary-glow), -0.05em -0.025em 0 var(--secondary-glow); }
+      14% { text-shadow: 0.05em 0 0 var(--primary-glow), -0.05em -0.025em 0 var(--secondary-glow); }
+      15% { text-shadow: -0.05em -0.025em 0 var(--primary-glow), 0.025em 0.025em 0 var(--secondary-glow); }
+      49% { text-shadow: -0.05em -0.025em 0 var(--primary-glow), 0.025em 0.025em 0 var(--secondary-glow); }
+      50% { text-shadow: 0.025em 0.05em 0 var(--primary-glow), 0.05em 0 0 var(--secondary-glow); }
+      99% { text-shadow: 0.025em 0.05em 0 var(--primary-glow), 0.05em 0 0 var(--secondary-glow); }
+      100% { text-shadow: -0.025em 0 0 var(--primary-glow), -0.025em -0.025em 0 var(--secondary-glow); }
+    }
+
+    /* Glowing neon elements */
+    .neon {
+      text-shadow: 0 0 5px var(--primary-glow), 0 0 10px var(--primary-glow);
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+
+    .holo-scanner-text {
+      position: relative;
+      font-size: 2.8em;
+      text-align: center;
+      margin-top: 80px;
+      opacity: 0;
+      animation: glitch 2s infinite alternate-reverse;
+      z-index: 2;
+    }
+    
+    .holo-scanner-text::before,
+    .holo-scanner-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    .holo-scanner-text::before {
+      color: var(--primary-glow);
+      animation: glitch 0.3s infinite;
+    }
+    
+    .holo-scanner-text::after {
+      color: var(--secondary-glow);
+      animation: glitch 0.3s 0.1s infinite;
+    }
+    
+    .spaceship-container {
+      text-align: center;
+      margin-top: 30px;
+      z-index: 2;
+      position: relative;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .spaceship-container img {
+      opacity: 0;
+      transition: opacity 3s, transform 0.5s;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Job Listings Section */
+    .job-listings {
+      max-width: 900px;
+      margin: 100px auto 50px;
+      z-index: 2;
+      position: relative;
+    }
+    
+    .job-listings h2 {
+      font-size: 2.2em;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .job-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-gap: 20px;
+    }
+
+    .job-item {
+      background: var(--panel-bg);
+      padding: 25px;
+      margin: 10px 0;
+      border-radius: 12px;
+      border: 1px solid rgba(127, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .job-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(127, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .job-item:hover {
+      transform: translateY(-15px) scale(1.03);
+      box-shadow: 0 15px 30px rgba(0, 255, 255, 0.2);
+    }
+    
+    .job-item:hover::before {
+      left: 100%;
+    }
+    
+    .job-item h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: var(--primary-glow);
+    }
+    
+    .job-item p {
+      font-size: 0.9em;
+      margin: 10px 0;
+      opacity: 0.8;
+    }
+    
+    .job-item .details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+    }
+    
+    .job-item:hover .details {
+      max-height: 200px;
+    }
+    
+    .job-item .tech-badge {
+      display: inline-block;
+      background: rgba(16, 24, 48, 0.8);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      margin: 5px 3px 0 0;
+      border: 1px solid var(--primary-glow);
+    }
+
+    /* Apply Now Button */
+    .cta-container {
+      text-align: center;
+      margin: 40px 0;
+    }
+    
+    .apply-btn {
+      display: inline-block;
+      padding: 15px 40px;
+      margin: 20px 0;
+      background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+      color: #000;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      font-size: 1.2em;
+      letter-spacing: 1px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2;
+    }
+    
+    .apply-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(transparent, rgba(255, 255, 255, 0.3), transparent 30%);
+      animation: rotate 4s linear infinite;
+      z-index: -1;
+    }
+    
+    @keyframes rotate {
+      100% {
+        transform: rotate(1turn);
+      }
+    }
+    
+    .apply-btn:hover {
+      box-shadow: 0 0 15px var(--primary-glow), 0 0 30px var(--secondary-glow);
+      transform: scale(1.05) translateY(-5px);
+      letter-spacing: 2px;
+    }
+    
+    .apply-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Application Form */
+    .application-form {
+      background: var(--panel-bg);
+      max-width: 700px;
+      margin: 0 auto 50px;
+      padding: 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(127, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+      z-index: 2;
+      position: relative;
+    }
+    
+    .application-form.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    .application-form h3 {
+      margin-bottom: 25px;
+      font-size: 1.8em;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(16, 24, 48, 0.7);
+      border: 1px solid rgba(127, 255, 255, 0.3);
+      border-radius: 8px;
+      color: var(--text-color);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-glow);
+      box-shadow: 0 0 5px var(--primary-glow);
+      outline: none;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 30px 0;
+      z-index: 2;
+      position: relative;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+    
+    .countdown {
+      font-size: 1.4em;
+      margin: 15px;
+      padding: 10px;
+      animation: pulse 2s infinite;
+    }
+    
+    .social-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .social-drone {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      margin: 0 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .social-drone img {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
+    }
+    
+    .social-drone:hover {
+      animation: float 1s ease-in-out infinite;
+    }
+    
+    .social-drone:hover img {
+      transform: scale(1.2) rotate(5deg);
+    }
+
+    /* Comet cursor (basic) */
+    .cursor-trail {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--primary-glow);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div id="stars"></div>
+  
+  <!-- Parallax background elements -->
+  <div class="parallax parallax-far"></div>
+  <div class="parallax parallax-mid"></div>
+  <div class="parallax parallax-near"></div>
+
+  <!-- Header animation text (Holographic scanner) -->
+  <div id="scannerText" class="holo-scanner-text neon" data-text="Mission: Join the Galactic Crew"></div>
+
+  <!-- Spaceship illustration -->
+  <div class="spaceship-container">
+    <img 
+      src="https://www.pngarts.com/files/3/Spaceship-PNG-Download-Image.png" 
+      alt="Spaceship" 
+      id="spaceship"
+    />
+  </div>
+
+  <!-- Job Listings Section -->
+  <div class="job-listings">
+    <h2 class="neon">Open Positions</h2>
+    <div class="job-container">
+      <div class="job-item">
+        <h3 class="neon">Space Navigator</h3>
+        <p>Chart courses through unexplored galaxies using quantum navigation systems.</p>
+        <div class="details">
+          <p>Requirements: 5+ years experience with interstellar navigation, quantum physics degree.</p>
+          <div class="tech-badge">Quantum Computing</div>
+          <div class="tech-badge">Gravimetric Analysis</div>
+          <div class="tech-badge">Wormhole Mapping</div>
+        </div>
+      </div>
+      
+      <div class="job-item">
+        <h3 class="neon">Planetary Geologist</h3>
+        <p>Study alien world formations and identify suitable colonization sites.</p>
+        <div class="details">
+          <p>Requirements: Advanced degree in xenogeology, experience with holographic terrain mapping.</p>
+          <div class="tech-badge">Mineral Scanning</div>
+          <div class="tech-badge">Atmospheric Analysis</div>
+          <div class="tech-badge">Resource Identification</div>
+        </div>
+      </div>
+      
+      <div class="job-item">
+        <h3 class="neon">Alien Communication Specialist</h3>
+        <p>Decipher and establish contact with newly discovered sentient species.</p>
+        <div class="details">
+          <p>Requirements: Neural-linguistic programming certification, empathic rating of 85+.</p>
+          <div class="tech-badge">Universal Translator</div>
+          <div class="tech-badge">Sign Language</div>
+          <div class="tech-badge">Telepathic Protocols</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apply Now Button -->
+    <div class="cta-container">
+      <a href="#applyForm" class="apply-btn" id="warpButton">Apply Now</a>
+    </div>
+  </div>
+
+  <!-- "Apply Now" form with teleport effect -->
+  <div id="applyForm" class="application-form">
+    <h3 class="neon">Warp-Speed Application Portal</h3>
+    <form>
+      <div class="form-group">
+        <label for="name">Cosmic Identity (Name)</label>
+        <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Subspace Communication Channel (Email)</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="position">Desired Position</label>
+        <select id="position" class="form-control">
+          <option value="">Select a position</option>
+          <option value="navigator">Space Navigator</option>
+          <option value="geologist">Planetary Geologist</option>
+          <option value="communicator">Alien Communication Specialist</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="skills">Galactic Skills & Experiences</label>
+        <textarea id="skills" class="form-control" rows="4" placeholder="Tell us about your interstellar qualifications..."></textarea>
+      </div>
+      
+      <div class="cta-container">
+        <button type="submit" class="apply-btn">Transmit Application</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer with countdown -->
+  <footer>
+    <div class="countdown neon" id="countdown">Next Crew Departure: 00d 00h 00m 00s</div>
+    <p>Follow our mission on the intergalactic network:</p>
+    <div class="social-container">
+      <div class="social-drone">
+        <img src="https://www.iconpacks.net/icons/2/free-twitter-logo-icon-2429-thumb.png" alt="Space Twitter" />
+      </div>
+      <div class="social-drone">
+        <img src="https://www.iconpacks.net/icons/2/free-instagram-logo-icon-3497-thumb.png" alt="Space Instagram" />
+      </div>
+      <div class="social-drone">
+        <img src="https://www.iconpacks.net/icons/2/free-youtube-logo-icon-2431-thumb.png" alt="Space YouTube" />
+      </div>
+    </div>
+    <p>© 2025 Galactic Crew Enterprises | All Rights Reserved Across the Universe</p>
+  </footer>
+
+  <script>
+    // Text reveal animation
+    const scannerText = "Mission: Join the Galactic Crew";
+    let index = 0;
+
+    function revealText() {
+      const element = document.getElementById("scannerText");
+      element.style.opacity = "1";
+      
+      if (index < scannerText.length) {
+        element.textContent += scannerText.charAt(index);
+        element.setAttribute('data-text', element.textContent);
+        index++;
+        
+        // Varying speeds to simulate typing
+        const speed = Math.random() * 50 + 80;
+        setTimeout(revealText, speed);
+        
+        // Add glitch sound
+        if (Math.random() > 0.7) {
+          playSound('glitch');
+        }
+      } else {
+        // Fade in spaceship with engine sound
+        setTimeout(() => {
+          document.getElementById("spaceship").style.opacity = "1";
+          playSound('engine');
+        }, 500);
+      }
+    }
+
+    // Dynamic starfield background
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      const starCount = 200;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        const size = Math.random() * 2;
+        
+        star.style.position = 'absolute';
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.background = '#fff';
+        star.style.borderRadius = '50%';
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.opacity = Math.random();
+        star.style.animation = `twinkle ${Math.random() * 5 + 3}s infinite alternate`;
+        
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // Create cursor trail effect
+    function createCursorTrail() {
+      const cursorTrailCount = 5;
+      const trails = [];
+      
+      for (let i = 0; i < cursorTrailCount; i++) {
+        const trail = document.createElement('div');
+        trail.classList.add('cursor-trail');
+        document.body.appendChild(trail);
+        trails.push(trail);
+      }
+      
+      document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        setTimeout(() => {
+          trails.forEach((trail, index) => {
+            setTimeout(() => {
+              trail.style.left = `${mouseX}px`;
+              trail.style.top = `${mouseY}px`;
+              trail.style.opacity = 1 - (index * 0.2);
+              trail.style.transform = `scale(${1 - (index * 0.15)})`;
+              
+              setTimeout(() => {
+                trail.style.opacity = "0";
+              }, index * 50);
+            }, index * 40);
+          });
+        }, 5);
+      });
+    }
+
+    // Countdown timer
+    function updateCountdown() {
+      // Set the date 7 days from now
+      const countdownDate = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+      const now = new Date().getTime();
+      const distance = countdownDate - now;
+
+      if (distance > 0) {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        document.getElementById("countdown").textContent =
+          "Next Crew Departure: " +
+          days +
+          "d " +
+          hours +
+          "h " +
+          minutes +
+          "m " +
+          seconds +
+          "s";
+      }
+    }
+
+    // Sound effects
+    function playSound(type) {
+      // This would be implemented with actual sound files
+      // For demonstration, we're just showing where sound would play
+      console.log(`Playing sound: ${type}`);
+    }
+
+    // Warp drive transition
+    document.getElementById("warpButton").addEventListener("click", function(e) {
+      e.preventDefault();
+      
+      // Play warp sound
+      playSound('warp');
+      
+      // Create warp effect overlay
+      const warpOverlay = document.createElement('div');
+      warpOverlay.style.position = 'fixed';
+      warpOverlay.style.top = '0';
+      warpOverlay.style.left = '0';
+      warpOverlay.style.width = '100%';
+      warpOverlay.style.height = '100%';
+      warpOverlay.style.background = 'linear-gradient(90deg, var(--primary-glow), var(--secondary-glow))';
+      warpOverlay.style.opacity = '0';
+      warpOverlay.style.zIndex = '999';
+      warpOverlay.style.transition = 'opacity 0.5s';
+      
+      document.body.appendChild(warpOverlay);
+      
+      // Fade in warp effect
+      setTimeout(() => {
+        warpOverlay.style.opacity = '0.8';
+      }, 10);
+      
+      // Scroll to form and show
+      setTimeout(() => {
+        const form = document.getElementById('applyForm');
+        form.scrollIntoView({ behavior: 'smooth' });
+        form.classList.add('visible');
+        
+        // Fade out warp effect
+        warpOverlay.style.opacity = '0';
+        setTimeout(() => {
+          document.body.removeChild(warpOverlay);
+        }, 500);
+      }, 800);
+    });
+
+    // Initialize everything on load
+    window.onload = function() {
+      createStars();
+      createCursorTrail();
+      revealText();
+      setInterval(updateCountdown, 1000);
+      
+      // Add hover sound effects to buttons and job items
+      document.querySelectorAll('.job-item, .apply-btn').forEach(item => {
+        item.addEventListener('mouseenter', () => playSound('hover'));
+      });
+    };
+  </script>
+</body>
+</html>
